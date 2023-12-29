@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vending Machine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            /* background-color: #f4f4f4; */
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+             /* Center the container */
+            transform: translateY(10%)
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .qr-code-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .qr-code {
+            max-width: 300px;
+            border: 5px solid #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .payment-method {
+            font-size: 30px;
+            margin: 0 10px;
+            color: #333;
+        }
+        
+        .gpay {
+            color: #4285F4;
+        }
+        
+        .phonepay {
+            color: #FF9800;
+        }
+        
+        .upi {
+            color: #9C27B0;
+        }
+        
+        .bhimup {
+            color: #03A9F4;
+        }
+        
+        .message {
+            text-align: center;
+            color: #999;
+            font-size: 18px;
+        }
+        
+        /* Background animation */
+        @keyframes bgAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        body {
+            animation: bgAnimation 10s ease infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container align-items-center justify-content-center">
+        <h1>Online Payment For Momos</h1>
+        
+        <div class="qr-code-container">
+            <img class="qr-code" src="{{ qr_code_data }}" alt="QR Code">
+        </div>
+        <div class="payment-methods">
+            <i class="fab fa-google-pay payment-method gpay"></i>
+            <i class="fas fa-phone-alt payment-method phonepay"></i>
+            <i class="fas fa-money-bill-wave payment-method upi"></i>
+            <i class="fas fa-university payment-method bhimup"></i>
+        </div>
+        <p class="message">Scan the QR code to proceed with the payment.</p>
+
+        <div class="timer" id="timer">Time Remaining: <span id="countdown">40</span> seconds</div>
+        
+        <script>
+            var countdownElement = document.getElementById("countdown");
+            var countdown = 40;
+            
+            function updateCountdown() {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    window.location.href = "/payment_failure";
+                }
+            }
+            
+            var timer = setInterval(updateCountdown, 1000);
+        </script>
+        
+        <script>
+            function checkPaymentStatus() {
+                var order_id = "{{ order_id }}";
+                var xhr = new XMLHttpRequest();
+                
+                xhr.open("GET", "/check_payment_status?order_id=" + order_id, true);
+                
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.payment_status === "PAID") {
+                            window.location.href = "/payment_success";
+
+                        } else if (response.payment_status === "FAILED") {
+                            window.location.href = "/payment_failure";
+                            
+                        } else if (response.payment_status === "NOT_PAID") {
+                            // Payment not made yet, continue with the countdown
+                        } else {
+                            // Some error occurred, handle accordingly
+                        }
+                    }
+                };
+                
+                xhr.send();
+            }
+            
+            // Check payment status every 2 seconds
+            setInterval(checkPaymentStatus, 2000);
+        </script>
+    </div>
+</body>
+</html>

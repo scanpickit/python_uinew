@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VENDING MACHINE</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button.red {
+            background-color: #f44336;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Place Your Order Here!!</h1>
+        <div class="button-container">
+            <button class="button green" onclick="submitForm('30')">Veg ₹30</button>
+            <button class="button red" onclick="submitForm('80')">Non Veg ₹80</button>
+        </div>
+    </div>
+
+    <script>
+        function submitForm(amount) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/create_order';
+  
+            var hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = 'order_amount';
+            hiddenField.value = amount;
+    
+            form.appendChild(hiddenField);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+    
+</body>
+</html>
