@@ -1,15 +1,17 @@
 import requests
-from flask import Flask, render_template, request , jsonify
+from flask import Flask, render_template, request , jsonify, session
 import time
 import uuid
 import serial
 import time
+import json
 
-# ser = serial.Serial('COM7', 9600)#setup arduino
+ser = serial.Serial('COM5', 9600)#setup arduino
 time.sleep(2)
 
 # app = Flask(__name__)
 app = Flask(__name__, static_url_path='/static')
+app.secret_key = '9999'  # Set a secret key for session security
 
 
 
@@ -20,6 +22,22 @@ def index():
 @app.route('/create_order', methods=['POST'])
 def order_pay():
     amount = float(request.form['order_amount'])
+    cart_data = request.form.get('cart_data')
+
+    # Convert the JSON string to a Python dictionary
+    cart_data_dict = json.loads(cart_data)
+
+    # Store cart_data_dict in the session
+    session['cart_data'] = cart_data_dict
+
+    # Log session ID for demonstration purposes
+    # print(f"Session ID in order_pay: {session.sid}")
+
+
+    # Now you can use cart_data_dict in your logic
+    for product_title, product_quantity in cart_data_dict.items():
+        print(f"Product: {product_title}, Quantity: {product_quantity}")
+        
     print(amount)
     order_id = str(uuid.uuid4())
 
@@ -110,18 +128,52 @@ def check_payment_status():
 
 @app.route('/payment_success')
 def payment_success():
-    stacks = [
-        {"stack": 1, "quantity": 2},
-        {"stack": 2, "quantity": 1},
-        {"stack": 3, "quantity": 3}
-        # Add more stacks as needed
-    ]
 
-    commands = ""
-    for stack in stacks:
-        commands += f'{stack["stack"]} {stack["quantity"]} '
+    cart_data = session.get('cart_data', {})
 
-    print(commands.encode())
+    # Print keys and values for verification
+    for product_title, product_quantity in cart_data.items():
+        print(f"Product during success: {product_title}, Quantity during success: {product_quantity}")
+
+    # Define the mapping of product titles to stack numbers
+    stack_mapping = {
+            "GALINA CAIPIRA": 1,
+            "VERY VEGGIE": 2,
+            "SPICY EPICE": 3,
+            # Add more mappings as needed
+        }
+    
+
+    # Initialize quantities for each stack
+    stack_quantities = {stack_number: 0 for stack_number in range(1, 4)}  # Assuming 3 stacks
+
+    # Update quantities based on cart data
+    for product_title, product_quantity in cart_data.items():
+        stack_number = stack_mapping.get(product_title)
+        if stack_number:
+            stack_quantities[stack_number] = product_quantity
+
+    # Format the data as needed (product_title stack no,quantity)
+
+    # Format the data as needed (1 2,2 1,3 2)
+    formatted_data = ' '.join([f"{stack_number} {product_quantity}" for stack_number, product_quantity in stack_quantities.items()])
+
+
+
+
+    print("Info to be sent to Arduino after Success:")
+    print(formatted_data)
+
+    # Convert the formatted_data string to bytes before sending to Arduino
+    encoded_data = formatted_data.encode('utf-8')
+
+    try:
+        # Send the encoded data to Arduino
+        ser.write(encoded_data)
+        print("Data sent to Arduino successfully")
+    except Exception as e:
+        print(f"Error sending data to Arduino: {str(e)}")
+
     return render_template('success.html')
 
 

@@ -31,7 +31,6 @@ window.onload = function () {
     const totalDisplay = document.getElementById('amt');
     const emptyCartMsg = document.getElementById('emptyCartMsg');
     const speedAnimation = 1000;
-    const submitbtn = document.querySelector('.submit-btn');
 
     let totalAmount = 0;
     let totalQuantity = 0;
@@ -221,22 +220,50 @@ window.onload = function () {
         const itemTotalPrice = quantity * productPrice;
         cartItem.querySelector('.cart-item-total').textContent = `Rs.${itemTotalPrice.toFixed(2)}`;
     }
-    submitbtn.addEventListener('click',()=>{
+
+    // Submit button click event
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn.addEventListener('click', function () {
+        const cartItems = Array.from(sideMenu.querySelectorAll('.cart-item-title'));
+        const cartQuantities = Array.from(sideMenu.querySelectorAll('.quantity'));
+
+        const cartData = {};
+
+        cartItems.forEach((item, index) => {
+            const productTitle = item.textContent.trim();
+            const productQuantity = parseInt(cartQuantities[index].textContent, 10);
+            cartData[productTitle] = productQuantity;
+        });
+        console.log(cartData);
+
+        // Add the logic for creating the form and submitting it
         var form = document.createElement('form');
         form.method = 'POST';
         form.action = '/create_order';
+
+        var hiddenAmountField = document.createElement('input');
+        hiddenAmountField.type = 'hidden';
+        hiddenAmountField.name = 'order_amount';
+        hiddenAmountField.value = totalAmount.toString();
+
+        var hiddenQuantityField = document.createElement('input');
+        hiddenQuantityField.type = 'hidden';
+        hiddenQuantityField.name = 'order_quantity';
+        hiddenQuantityField.value = totalQuantity.toString();
         console.log(totalAmount);
-        console.log(totalQuantity);
-        
+        // console.log(totalQuantity);
 
-        var hiddenField = document.createElement('input');
-        hiddenField.type = 'hidden';
-        hiddenField.name = 'order_amount';
-        hiddenField.value = totalAmount.toString();;
+        var hiddenCartDataField = document.createElement('input');
+        hiddenCartDataField.type = 'hidden';
+        hiddenCartDataField.name = 'cart_data';
+        hiddenCartDataField.value = JSON.stringify(cartData);
 
-        form.appendChild(hiddenField);
+        form.appendChild(hiddenAmountField);
+        form.appendChild(hiddenQuantityField);
+        form.appendChild(hiddenCartDataField);
+
         document.body.appendChild(form);
         form.submit();
-    })
-    
+        
+    });
 };
