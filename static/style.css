@@ -4,6 +4,17 @@ body{
     color: white;
 }
 /*overlay*/
+.background_image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    object-fit: cover; /* Adjust as needed */
+    z-index: 1; /* Set a higher z-index to make it appear above the radial gradient */
+}
+
 .container {
     border-radius: 15%;
     position: relative;
@@ -21,8 +32,8 @@ body{
     border-radius: 20px;
     position: fixed;
     top: 0;
-    right: -600px;
-    width: 600px;
+    right: -1000px;
+    width: 1000px;
     height: 100%;
     background: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -82,16 +93,11 @@ body{
 
 @keyframes slideInOut {
     from {
-        right: -600px;
+        right: -1000px;
     }
     to {
         right: 0;
     }
-}
-
-.quantity-group{
-    padding:2.3%;
-    width: 50%;
 }
 
 .cart-content p {
@@ -99,10 +105,53 @@ body{
     grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
     margin-bottom: 15px;
+    font-size: 1.2rem; /* Adjust the font size as needed */
+    padding: 15px; /* Adjust the padding as needed */
+}
+
+.cart-item-title {
+    font-weight: bold;
+    font-size: 2rem; 
+}
+
+.cart-item-price {
+    font-size: 1.5rem; 
+}
+
+/* Add this CSS to your style.css file */
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Adjust as needed */
+    gap: 10px; /* Adjust gap as needed */
+}
+
+.submit-btn,
+.close-btn {
+    width: 48%; 
+    font-size: 1.5rem;
+    background-color: rgb(238, 173, 53);
+    color: black;
+    padding: 15px; 
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.submit-btn:hover,
+.close-btn:hover {
+    background-color: darkorange;
+}
+
+
+
+.quantity-group{
+    padding:2.3%;
+    width: 50%;
 }
 
 .cart-content img {
-    max-width: 80px;
+    max-width: 1000px;
     max-height: 80px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -112,10 +161,6 @@ body{
     display: flex;
     flex-direction: column;
     margin-left: 15px;
-}
-
-.cart-item-title {
-    font-weight: bold;
 }
 
 .cart-item-price {
@@ -138,7 +183,7 @@ body{
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 25px;
     margin: 0;
     cursor: pointer;
 }
@@ -148,10 +193,10 @@ body{
 }
 
 .cart-item-total {
-    font-size: 1rem;
+    font-size: 1.5rem;
     font-weight: bold;
-    margin-left: auto; /* Push cart item total to the right */
-    margin-right: 10px; /* Adjust the margin as needed */
+    margin-left: auto;
+    margin-right: 10px;
 }
 
 .remove-item {
@@ -171,7 +216,6 @@ body{
     font-size: 2rem;
     font-weight: bold;
 }
-
 
 /*slider*/
 .wrapper{

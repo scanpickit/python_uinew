@@ -31,6 +31,10 @@ window.onload = function () {
     const totalDisplay = document.getElementById('amt');
     const emptyCartMsg = document.getElementById('emptyCartMsg');
     const speedAnimation = 1000;
+    const cartPos = {
+        left: sideMenu.getBoundingClientRect().left,
+        top: sideMenu.getBoundingClientRect().top,
+    };
 
     let totalAmount = 0;
     let totalQuantity = 0;
@@ -38,7 +42,7 @@ window.onload = function () {
     document.addEventListener('click', function (e) {
         const targetElement = e.target;
 
-        if (targetElement.classList.contains('product_buy')) {
+        if (targetElement.classList.contains('product_buy') || targetElement.classList.contains('buy-now')) {
             const productSlide = targetElement.closest('.product_slide');
             const productTitle = productSlide.querySelector('.product_title').textContent;
             const productPrice = parseFloat(productSlide.querySelector('.product_price').textContent.replace('Rs.', ''));
@@ -47,7 +51,8 @@ window.onload = function () {
             const existingCartItem = findCartItem(productTitle);
 
             if (existingCartItem) {
-                incrementCartItem(existingCartItem, productPrice);
+                console.log('incremented');
+                incrementCartValue(productTitle, productPrice, productImageSrc);
             } else {
                 addToCart(productTitle, productPrice, productImageSrc);
             }
@@ -60,11 +65,6 @@ window.onload = function () {
                     emptyCartMsg.style.display = 'block';
                 }
             }
-
-            const cartPos = {
-                left: sideMenu.getBoundingClientRect().left,
-                top: sideMenu.getBoundingClientRect().top,
-            };
 
             const productImage = productSlide.querySelector('.product_picture');
             const productImageFly = productImage.cloneNode(true);
@@ -119,39 +119,31 @@ window.onload = function () {
         return Array.from(sideMenu.querySelectorAll('.cart-item-title')).find(title => title.textContent === productTitle);
     }
 
-    function incrementCartItem(cartItemTitle, productPrice) {
-        const cartItem = findCartItem(cartItemTitle);
-        const quantityElement = cartItem.closest('p').querySelector('.quantity');
-        const quantity = parseInt(quantityElement.textContent, 10);
-        quantityElement.textContent = quantity + 1;
-
-        updateCartItemTotal(cartItem, quantity + 1, productPrice);
-
+    function incrementCartValue(productTitle, productPrice, productImageSrc) {
+        const existingCartItem = findCartItem(productTitle);
+    
+        if (existingCartItem) {
+            // If the product already exists, increment the quantity by 1
+            const quantityElement = existingCartItem.querySelector('.quantity');
+            let quantity = parseInt(quantityElement.textContent, 10);
+            quantity += 1;
+            quantityElement.textContent = quantity;
+    
+            updateCartItemTotal(existingCartItem, quantity, productPrice);
+        } else {
+            // If the product does not exist, add it to the cart with a quantity of 1
+            addToCart(productTitle, productPrice, productImageSrc);
+        }
+    
+        // Update the total quantity and amount
         totalQuantity += 1;
         totalAmount += productPrice;
-
-        const productImage = cartItem.querySelector('.cart-item-image');
-        const productImageFly = productImage.cloneNode(true);
-
-        productImageFly.style.cssText = `
-            position: fixed;
-            left: ${productImage.getBoundingClientRect().left}px;
-            top: ${productImage.getBoundingClientRect().top}px;
-            width: ${productImage.offsetWidth}px;
-            height: ${productImage.offsetHeight}px;
-            transition: all ${speedAnimation}ms ease;
-        `;
-
-        document.body.append(productImageFly);
-
-        setTimeout(() => {
-            productImageFly.style.left = `${cartPos.left}px`;
-            productImageFly.style.top = `${cartPos.top}px`;
-            productImageFly.style.width = `0px`;
-            productImageFly.style.height = `0px`;
-            productImageFly.style.opacity = `0.5`;
-        }, 0);
+    
+        // Update the header cart and side menu total
+        updateHeaderCart();
+        updateSideMenuTotal();
     }
+    
 
     function addToCart(productTitle, productPrice, productImageSrc) {
         const cartItem = document.createElement('div');
@@ -166,11 +158,10 @@ window.onload = function () {
                 </span>
                 <span class="quantity-group">
                     <button class="btn btn-primary">-</button>
-                    <span class="quantity" style="fone-size:1.5rem;">${quantity}</span>
+                    <span class="quantity" style="font-size: 1.5rem;">${quantity}</span>
                     <button class="btn btn-primary">+</button>
                 </span>
                 <span class="cart-item-total">Rs.${productPrice.toFixed(2)}</span>
-                <button class="remove-item">Remove</button>
             </p>
         `;
 
@@ -221,6 +212,10 @@ window.onload = function () {
         cartItem.querySelector('.cart-item-total').textContent = `Rs.${itemTotalPrice.toFixed(2)}`;
     }
 
+    document.getElementById('overlay').addEventListener('click', function () {
+        toggleOverlay();
+    });
+
     // Submit button click event
     const submitBtn = document.querySelector('.submit-btn');
     submitBtn.addEventListener('click', function () {
@@ -234,7 +229,6 @@ window.onload = function () {
             const productQuantity = parseInt(cartQuantities[index].textContent, 10);
             cartData[productTitle] = productQuantity;
         });
-        console.log(cartData);
 
         // Add the logic for creating the form and submitting it
         var form = document.createElement('form');
@@ -250,8 +244,6 @@ window.onload = function () {
         hiddenQuantityField.type = 'hidden';
         hiddenQuantityField.name = 'order_quantity';
         hiddenQuantityField.value = totalQuantity.toString();
-        console.log(totalAmount);
-        // console.log(totalQuantity);
 
         var hiddenCartDataField = document.createElement('input');
         hiddenCartDataField.type = 'hidden';
@@ -264,6 +256,13 @@ window.onload = function () {
 
         document.body.appendChild(form);
         form.submit();
-        
     });
 };
+
+function toggleOverlay() {
+    var overlay = document.getElementById('overlay');
+    var sideMenu = document.getElementById('sideMenu');
+
+    overlay.style.display = (overlay.style.display === 'block') ? 'none' : 'block';
+    sideMenu.style.right = (sideMenu.style.right === '0px') ? '-1000px' : '0px';
+}

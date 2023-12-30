@@ -6,7 +6,7 @@ import serial
 import time
 import json
 
-ser = serial.Serial('COM5', 9600)#setup arduino
+# ser = serial.Serial('COM5', 9600)#setup arduino
 time.sleep(2)
 
 # app = Flask(__name__)

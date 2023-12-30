@@ -95,7 +95,7 @@
 </head>
 <body>
     <div class="container align-items-center justify-content-center">
-        <h1>Online Payment For Momos</h1>
+        <h1>Online Payment For Noodles</h1>
         
         <div class="qr-code-container">
             <img class="qr-code" src="{{ qr_code_data }}" alt="QR Code">
@@ -108,11 +108,11 @@
         </div>
         <p class="message">Scan the QR code to proceed with the payment.</p>
 
-        <div class="timer" id="timer">Time Remaining: <span id="countdown">40</span> seconds</div>
+        <div class="timer" id="timer">Time Remaining: <span id="countdown">60</span> seconds</div>
         
         <script>
             var countdownElement = document.getElementById("countdown");
-            var countdown = 40;
+            var countdown = 60;
             
             function updateCountdown() {
                 countdown--;

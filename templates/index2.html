@@ -18,6 +18,7 @@
                 <div class="product_wrapper swiper-wrapper">
                     <div class="product_slide swiper-slide">
                         <div class="product_body">
+                            <img src="{{ url_for('static', filename='images/veggie.png') }}" class="background_image" alt="Background Image">
                             <div class="product_content">
                                 <div 
                                 data-swiper-parallax-opacity="0.5"
@@ -46,6 +47,7 @@
                     </div>
                     <div class="product_slide swiper-slide">
                         <div class="product_body">
+                            <img src="{{ url_for('static', filename='images/veggie.png') }}" class="background_image" alt="Background Image">
                             <div class="product_content">
                                 <div 
                                 data-swiper-parallax-opacity="0.5"
@@ -75,6 +77,7 @@
                     </div>
                     <div class="product_slide swiper-slide">
                         <div class="product_body">
+                            <img src="{{ url_for('static', filename='images/veggie.png') }}" class="background_image" alt="Background Image">
                             <div class="product_content">
                                 <div 
                                 data-swiper-parallax-opacity="0.5"
@@ -117,8 +120,10 @@
                 <h2 id="totalText">Total : </h2>
                 <h2 id="amt">0</h2>
             </div>
-            <button class="btn btn-dark submit-btn" type="submit" >Submit</button>
-            <button class="btn btn-dark close-btn" onclick="toggleOverlay()">Close Cart</button>
+            <div>
+                <button class="btn btn-dark submit-btn" type="submit" >Submit</button>
+                <button class="btn btn-dark close-btn" onclick="toggleOverlay()">Close Cart</button>    
+            </div>
         </div>
     </div>
     <script src="https://kit.fontawesome.com/bb6c5dea65.js" crossorigin="anonymous"></script>
@@ -130,10 +135,9 @@
             var sideMenu = document.getElementById('sideMenu');
 
             overlay.style.display = (overlay.style.display === 'block') ? 'none' : 'block';
-            sideMenu.style.right = (sideMenu.style.right === '0px') ? '-600px' : '0px';
+            sideMenu.style.right = (sideMenu.style.right === '0px') ? '-1000px' : '0px';
             
         }
-        
     </script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
